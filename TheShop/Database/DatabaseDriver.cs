@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TheShop.Interfaces.Database;
 using TheShop.Model;
 
 namespace TheShop.Database
 {
     //in memory implementation
-    public class DatabaseDriver
+    public class DatabaseDriver : IDatabaseDriver
 	{
 		private List<Article> _articles = new List<Article>();
 

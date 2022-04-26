@@ -1,14 +1,17 @@
 ﻿using System;
 using TheShop.Common;
 using TheShop.Database;
+using TheShop.Interfaces.Common;
+using TheShop.Interfaces.Services;
 using TheShop.Model;
 
-namespace TheShop
+namespace TheShop.Services
 {
-    public class ShopService
+    public class ShopService : IShopService
 	{
 		private DatabaseDriver DatabaseDriver;
-		private Logger logger;
+		private ISupplierService supplierService;
+		private ILogger logger;
 
 		private Supplier1 Supplier1;
 		private Supplier2 Supplier2;
@@ -17,6 +20,7 @@ namespace TheShop
 		public ShopService()
 		{
 			DatabaseDriver = new DatabaseDriver();
+			supplierService = new SupplierService();
 			logger = new Logger();
 			Supplier1 = new Supplier1();
 			Supplier2 = new Supplier2();
@@ -33,19 +37,19 @@ namespace TheShop
 			if (articleExists)
 			{
 				tempArticle = Supplier1.GetArticle(id);
-				if (maxExpectedPrice < tempArticle.ArticlePrice)
+				if (maxExpectedPrice < tempArticle.Price)
 				{
 					articleExists = Supplier2.ArticleInInventory(id);
 					if (articleExists)
 					{
 						tempArticle = Supplier2.GetArticle(id);
-						if (maxExpectedPrice < tempArticle.ArticlePrice)
+						if (maxExpectedPrice < tempArticle.Price)
 						{
 							articleExists = Supplier3.ArticleInInventory(id);
 							if (articleExists)
 							{
 								tempArticle = Supplier3.GetArticle(id);
-								if (maxExpectedPrice < tempArticle.ArticlePrice)
+								if (maxExpectedPrice < tempArticle.Price)
 								{
 									article = tempArticle;
 								}
@@ -69,7 +73,7 @@ namespace TheShop
 
 			article.IsSold = true;
 			article.SoldDate = DateTime.Now;
-			article.BuyerUserId = buyerId;
+			article.BuyerId = buyerId;
 			
 			try
 			{

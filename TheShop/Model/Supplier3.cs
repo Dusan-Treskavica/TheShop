@@ -12,8 +12,8 @@
 			return new Article()
 			{
 				Id = 1,
-				ArticleName = "Article from supplier3",
-				ArticlePrice = 460
+				Name = "Article from supplier3",
+				Price = 460
 			};
 		}
 	}
