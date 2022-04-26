@@ -6,5 +6,7 @@ namespace TheShop.Interfaces.Services
     {
         Article GetById(int id);
         void Save(Article article);
+        void OrderArticleForBuyer(Article article, int buyerId);
+        void SellArticle(Article article);
     }
 }

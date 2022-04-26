@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using TheShop.Database;
 using TheShop.Interfaces.Database;
@@ -14,7 +13,7 @@ namespace TheShop.Services
 
         public SupplierService()
         {
-            this._databaseDriver = new DatabaseDriver();
+            _databaseDriver = new DatabaseDriver();
         }
 
         public bool HasArticle(int articleId)
@@ -29,7 +28,7 @@ namespace TheShop.Services
 
         public Article FindArticleByExpectedPrice(int id, int expectedPrice)
         {
-            foreach (Supplier supplier in this._databaseDriver.GetSuppliers())
+            foreach (Supplier supplier in _databaseDriver.GetSuppliers())
             {
                 Article supplierArticle = supplier.Articles.FirstOrDefault(x => x.Id == id);
                 if (supplierArticle != null && supplierArticle.Price <= expectedPrice)
