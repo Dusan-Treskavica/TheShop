@@ -19,5 +19,54 @@ namespace TheShop.Database
 		{
 			_articles.Add(article);
 		}
+
+		public IList<Supplier> GetSuppliers()
+		{
+			return new List<Supplier>
+			{
+				new Supplier()
+				{
+					Id = 1, 
+					Name = "Supplier1", 
+					Articles = new List<Article>
+					{
+						new Article()
+						{
+							Id = 1,
+							Name = "Article from supplier1",
+							Price = 458
+						}
+					}
+				},
+				new Supplier()
+				{
+					Id = 2, 
+					Name = "Supplier2", 
+					Articles = new List<Article>
+					{
+						new Article()
+						{
+							Id = 1,
+							Name = "Article from supplier2",
+							Price = 459
+						}
+					}
+				},
+				new Supplier()
+				{
+					Id = 3, 
+					Name = "Supplier3", 
+					Articles = new List<Article>
+					{
+						new Article()
+						{
+							Id = 1,
+							Name = "Article from supplier3",
+							Price = 460
+						}
+					}
+				}
+			};
+		}
 	}
 }

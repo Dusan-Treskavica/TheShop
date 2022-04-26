@@ -1,4 +1,5 @@
-﻿using TheShop.Model;
+﻿using System.Collections.Generic;
+using TheShop.Model;
 
 namespace TheShop.Interfaces.Database
 {
@@ -6,5 +7,6 @@ namespace TheShop.Interfaces.Database
     {
 		Article GetById(int id);
 		void Save(Article article);
-	}
+		IList<Supplier> GetSuppliers();
+    }
 }

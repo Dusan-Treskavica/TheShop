@@ -2,6 +2,7 @@
 using TheShop.Common;
 using TheShop.Database;
 using TheShop.Interfaces.Common;
+using TheShop.Interfaces.Database;
 using TheShop.Interfaces.Services;
 using TheShop.Model;
 
@@ -9,57 +10,22 @@ namespace TheShop.Services
 {
     public class ShopService : IShopService
 	{
-		private DatabaseDriver DatabaseDriver;
-		private ISupplierService supplierService;
-		private ILogger logger;
-
-		private Supplier1 Supplier1;
-		private Supplier2 Supplier2;
-		private Supplier3 Supplier3;
+		private readonly IDatabaseDriver _databaseDriver;
+		private readonly ISupplierService _supplierService;
+		private readonly ILogger _logger;
 		
 		public ShopService()
 		{
-			DatabaseDriver = new DatabaseDriver();
-			supplierService = new SupplierService();
-			logger = new Logger();
-			Supplier1 = new Supplier1();
-			Supplier2 = new Supplier2();
-			Supplier3 = new Supplier3();
+			_databaseDriver = new DatabaseDriver();
+			_supplierService = new SupplierService();
+			_logger = new Logger();
 		}
 
 		public void OrderAndSellArticle(int id, int maxExpectedPrice, int buyerId)
 		{
 			#region ordering article
 
-			Article article = null;
-			Article tempArticle = null;
-			var articleExists = Supplier1.ArticleInInventory(id);
-			if (articleExists)
-			{
-				tempArticle = Supplier1.GetArticle(id);
-				if (maxExpectedPrice < tempArticle.Price)
-				{
-					articleExists = Supplier2.ArticleInInventory(id);
-					if (articleExists)
-					{
-						tempArticle = Supplier2.GetArticle(id);
-						if (maxExpectedPrice < tempArticle.Price)
-						{
-							articleExists = Supplier3.ArticleInInventory(id);
-							if (articleExists)
-							{
-								tempArticle = Supplier3.GetArticle(id);
-								if (maxExpectedPrice < tempArticle.Price)
-								{
-									article = tempArticle;
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			article = tempArticle;
+			Article article = this._supplierService.FindArticleByExpectedPrice(id, maxExpectedPrice);
 			#endregion
 
 			#region selling article
@@ -69,7 +35,7 @@ namespace TheShop.Services
 				throw new Exception("Could not order article");
 			}
 
-			logger.Debug("Trying to sell article with id=" + id);
+			_logger.Debug("Trying to sell article with id=" + id);
 
 			article.IsSold = true;
 			article.SoldDate = DateTime.Now;
@@ -77,12 +43,12 @@ namespace TheShop.Services
 			
 			try
 			{
-				DatabaseDriver.Save(article);
-				logger.Info("Article with id=" + id + " is sold.");
+				_databaseDriver.Save(article);
+				_logger.Info("Article with id=" + id + " is sold.");
 			}
 			catch (ArgumentNullException ex)
 			{
-				logger.Error("Could not save article with id=" + id);
+				_logger.Error("Could not save article with id=" + id);
 				throw new Exception("Could not save article with id");
 			}
 			catch (Exception)
@@ -94,7 +60,7 @@ namespace TheShop.Services
 
 		public Article GetById(int id)
 		{
-			return DatabaseDriver.GetById(id);
+			return _databaseDriver.GetById(id);
 		}
 	}
 
