@@ -4,8 +4,8 @@ namespace BusinessLogic.Interfaces.Logic
 {
     public interface IShopLogic
     {
-        SupplierArticle FindArticleByExpectedPrice(int id, int expectedPrice);
-        void OrderArticleForBuyer(ShopArticle shopArticle, int buyerId);
-        void SellArticle(ShopArticle shopArticle);
+        ShopArticle OrderArticleForBuyer(int articleId, int maxExpectedPrice, int buyerId);
+        void SellShopArticle(ShopArticle shopArticle);
+        ShopArticle GetShopArticleById(int articleId);
     }
 }

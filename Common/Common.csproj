@@ -38,6 +38,8 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Exceptions\DatabaseException.cs" />
+        <Compile Include="Exceptions\ValidationException.cs" />
         <Compile Include="Interfaces\Logger\ILogger.cs" />
         <Compile Include="Logger\Logger.cs" />
         <Compile Include="Models\ShopArticle.cs" />

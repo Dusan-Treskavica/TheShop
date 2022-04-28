@@ -31,7 +31,7 @@ namespace DataAccess.Database
 
 	    public ShopArticle GetById(int id)
 		{
-			return _shopArticles.Single(x => x.Id == id);
+			return _shopArticles.FirstOrDefault(x => x.Id == id);
 		}
 
 		public void Save(ShopArticle shopArticle)
