@@ -38,6 +38,8 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Constants\ErrorConstants.cs" />
+        <Compile Include="Constants\InfoConstants.cs" />
         <Compile Include="Exceptions\DatabaseException.cs" />
         <Compile Include="Exceptions\ValidationException.cs" />
         <Compile Include="Interfaces\Logger\ILogger.cs" />

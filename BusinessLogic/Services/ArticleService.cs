@@ -19,10 +19,7 @@ namespace BusinessLogic.Services
 
         public ShopArticle GetById(int articleId)
         {
-            ShopArticle shopArticle = DatabaseDriver.Instance.GetById(articleId);
-            ValidateIfShopArticleExists(articleId, shopArticle);
-
-            return shopArticle;
+            return DatabaseDriver.Instance.GetById(articleId);
         }
 
         public void Save(ShopArticle shopArticle)
@@ -34,14 +31,6 @@ namespace BusinessLogic.Services
             catch (Exception ex)
             {
                 throw new DatabaseException($"Not able to store shopArticle. Database error: {ex.Message}", ex);
-            }
-        }
-        
-        private void ValidateIfShopArticleExists(int articleId, ShopArticle shopArticle)
-        {
-            if (shopArticle == null)
-            {
-                throw new ValidationException($"Article with Id = {articleId} doesn't exist.");
             }
         }
     }
