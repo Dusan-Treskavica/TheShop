@@ -5,6 +5,7 @@ using BusinessLogic.Interfaces.Mapper;
 using BusinessLogic.Interfaces.Services;
 using BusinessLogic.Mapper;
 using BusinessLogic.Services;
+using Common.Constants;
 using Common.Exceptions;
 using Common.Interfaces.Logger;
 using Common.Logger;
@@ -19,12 +20,15 @@ namespace BusinessLogic.Logic
         private readonly IShopMapper _shopMapper;
         private readonly ILogger _logger;
 
-        public ShopLogic()
+        public ShopLogic() : this(new SupplierService(), new ArticleService(), new ShopMapper(), new Logger())
+        { }
+
+        public ShopLogic(ISupplierService supplierService, IArticleService articleService, IShopMapper shopMapper, ILogger logger)
         {
-            _supplierService = new SupplierService();
-            _articleService = new ArticleService();
-            _shopMapper = new ShopMapper();
-            _logger = new Logger();
+            _supplierService = supplierService;
+            _articleService = articleService;
+            _shopMapper = shopMapper;
+            _logger = logger;
         }
 
         public ShopArticle OrderArticleForBuyer(int articleId, int maxExpectedPrice, int buyerId)
@@ -42,13 +46,16 @@ namespace BusinessLogic.Logic
         {
             ValidateShopArticleOnSell(shopArticle);
             _articleService.Save(shopArticle);
-            _logger.Info("Article with id=" + shopArticle.Id + " is sold.");
+            _logger.Info(string.Format(InfoConstants.SoldShopArticleInfo, shopArticle.Id));
         }
 
         public ShopArticle GetShopArticleById(int articleId)
         {
-            _logger.Info($"Getting ShopArticle with Id={articleId}");
-            return _articleService.GetById(articleId);
+            _logger.Info(string.Format(InfoConstants.GettingShopArticleInfo, articleId));
+            ShopArticle shopArticle = _articleService.GetById(articleId);
+            ValidateIfShopArticleExists(articleId, shopArticle);
+            
+            return shopArticle;
         }
 
         private SupplierArticle FindSupplierArticleByExpectedPrice(int articleId, int expectedPrice)
@@ -67,7 +74,7 @@ namespace BusinessLogic.Logic
         
         private void OrderArticleForBuyer(int buyerId, ShopArticle shopArticle)
         {
-            _logger.Info("Ordering article with id=" + shopArticle.Id);
+            _logger.Info(string.Format(InfoConstants.OrderingShopArticleInfo, shopArticle.Id));
             shopArticle.IsSold = true;
             shopArticle.SoldDate = DateTime.Now;
             shopArticle.BuyerId = buyerId;
@@ -77,8 +84,7 @@ namespace BusinessLogic.Logic
         {
             if (supplierArticle == null)
             {
-                throw new ValidationException(
-                    $"Article with Id={articleId} doesn't exist or there is no article with price<={maxExpectedPrice}.");
+                throw new ValidationException(string.Format(ErrorConstants.NotFoundedSupplierArticleValidationMessage, articleId, maxExpectedPrice));
             }
         }
         
@@ -86,7 +92,15 @@ namespace BusinessLogic.Logic
         {
             if (shopArticle == null)
             {
-                throw new ValidationException("ShopArticle that is null can't be sold.");
+                throw new ValidationException(ErrorConstants.CannotSellNullShopArticleValidationMessage);
+            }
+        }
+        
+        private void ValidateIfShopArticleExists(int articleId, ShopArticle shopArticle)
+        {
+            if (shopArticle == null)
+            {
+                throw new ValidationException(string.Format(ErrorConstants.ShopArticleNotExistsValidationMessage, articleId));
             }
         }
     }

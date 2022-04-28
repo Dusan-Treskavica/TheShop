@@ -6,7 +6,7 @@ namespace BusinessLogic.Services
 {
     public class SupplierService : ISupplierService
     {
-        public IList<Supplier> GetSuppliers()
+	    public IList<Supplier> GetSuppliers()
         {
         	return new List<Supplier>
         	{
