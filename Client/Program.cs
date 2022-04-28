@@ -13,34 +13,20 @@ namespace Client
 			{
 				//order and sell
 				shopService.OrderAndSellArticle(1, 460, 10);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-			}
-
-			try
-			{
+				
 				//print article on console
-				var article = shopService.GetById(1);
-				Console.WriteLine("Found article with ID: " + article.Id);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Article not found: " + ex);
-			}
-
-			try
-			{
+				var article1 = shopService.DisplayShopArticle(1);
+				Console.WriteLine("Found article with ID: " + article1.Id);
+				
 				//print article on console				
-				var article = shopService.GetById(12);
-				Console.WriteLine("Found article with ID: " + article.Id);
+				var article12 = shopService.DisplayShopArticle(12);
+				Console.WriteLine("Found article with ID: " + article12.Id);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("Article not found: " + ex);
+				Console.WriteLine(ex.Message);
 			}
-
+			
 			Console.ReadKey();
 		}
 	}

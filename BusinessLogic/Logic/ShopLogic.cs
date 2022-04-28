@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
 using BusinessLogic.Interfaces.Logic;
+using BusinessLogic.Interfaces.Mapper;
 using BusinessLogic.Interfaces.Services;
+using BusinessLogic.Mapper;
 using BusinessLogic.Services;
+using Common.Exceptions;
 using Common.Interfaces.Logger;
 using Common.Logger;
 using Common.Models;
@@ -13,20 +16,46 @@ namespace BusinessLogic.Logic
     {
         private readonly ISupplierService _supplierService;
         private readonly IArticleService _articleService;
+        private readonly IShopMapper _shopMapper;
         private readonly ILogger _logger;
 
         public ShopLogic()
         {
             _supplierService = new SupplierService();
             _articleService = new ArticleService();
+            _shopMapper = new ShopMapper();
             _logger = new Logger();
         }
 
-        public SupplierArticle FindArticleByExpectedPrice(int id, int expectedPrice)
+        public ShopArticle OrderArticleForBuyer(int articleId, int maxExpectedPrice, int buyerId)
+        {
+            SupplierArticle supplierArticle = FindSupplierArticleByExpectedPrice(articleId, maxExpectedPrice);
+            ValidateSupplierArticle(articleId, maxExpectedPrice, supplierArticle);
+            
+            ShopArticle shopArticle = _shopMapper.MapToShopArticle(supplierArticle);
+            OrderArticleForBuyer(buyerId, shopArticle);
+
+            return shopArticle;
+        }
+
+        public void SellShopArticle(ShopArticle shopArticle)
+        {
+            ValidateShopArticleOnSell(shopArticle);
+            _articleService.Save(shopArticle);
+            _logger.Info("Article with id=" + shopArticle.Id + " is sold.");
+        }
+
+        public ShopArticle GetShopArticleById(int articleId)
+        {
+            _logger.Info($"Getting ShopArticle with Id={articleId}");
+            return _articleService.GetById(articleId);
+        }
+
+        private SupplierArticle FindSupplierArticleByExpectedPrice(int articleId, int expectedPrice)
         {
             foreach (Supplier supplier in _supplierService.GetSuppliers())
             {
-                SupplierArticle supplierArticle = supplier.SupplierArticles.FirstOrDefault(x => x.Id == id);
+                SupplierArticle supplierArticle = supplier.SupplierArticles.FirstOrDefault(x => x.Id == articleId);
                 if (supplierArticle != null && supplierArticle.Price <= expectedPrice)
                 {
                     return supplierArticle;
@@ -35,34 +64,29 @@ namespace BusinessLogic.Logic
 
             return null;
         }
-
-        public void OrderArticleForBuyer(ShopArticle shopArticle, int buyerId)
+        
+        private void OrderArticleForBuyer(int buyerId, ShopArticle shopArticle)
         {
-            if (shopArticle == null)
-            {
-                _logger.Error("Could not order article");
-                throw new Exception("Could not order article");
-            }
-            _logger.Debug("Trying to sell article with id=" + shopArticle.Id);
+            _logger.Info("Ordering article with id=" + shopArticle.Id);
             shopArticle.IsSold = true;
             shopArticle.SoldDate = DateTime.Now;
             shopArticle.BuyerId = buyerId;
         }
         
-        public void SellArticle(ShopArticle shopArticle)
+        private static void ValidateSupplierArticle(int articleId, int maxExpectedPrice, SupplierArticle supplierArticle)
         {
-            try
+            if (supplierArticle == null)
             {
-                _articleService.Save(shopArticle);
-                _logger.Info("Article with id=" + shopArticle.Id + " is sold.");
+                throw new ValidationException(
+                    $"Article with Id={articleId} doesn't exist or there is no article with price<={maxExpectedPrice}.");
             }
-            catch (ArgumentNullException ex)
+        }
+        
+        private static void ValidateShopArticleOnSell(ShopArticle shopArticle)
+        {
+            if (shopArticle == null)
             {
-                _logger.Error("Could not save article with id=" + shopArticle.Id);
-                throw new Exception("Could not save article with id");
-            }
-            catch (Exception)
-            {
+                throw new ValidationException("ShopArticle that is null can't be sold.");
             }
         }
     }

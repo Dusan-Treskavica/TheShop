@@ -1,9 +1,8 @@
 ﻿using BusinessLogic.Interfaces.Logic;
-using BusinessLogic.Interfaces.Mapper;
 using BusinessLogic.Interfaces.Services;
 using BusinessLogic.Logic;
-using BusinessLogic.Mapper;
 using BusinessLogic.Services;
+using Common.Exceptions;
 using Common.Interfaces.Logger;
 using Common.Logger;
 using Common.Models;
@@ -14,31 +13,40 @@ namespace TheShop.Services
     public class ShopService : IShopService
 	{
 		private readonly IShopLogic _shopLogic;
-		private readonly IShopMapper _shopMapper;
 		private readonly IArticleService _articleService;
 		private readonly ILogger _logger;
 		
 		public ShopService()
 		{
 			_shopLogic = new ShopLogic();
-			_shopMapper = new ShopMapper();
 			_articleService = new ArticleService();
 			_logger = new Logger();
 		}
 
 		public void OrderAndSellArticle(int articleId, int maxExpectedPrice, int buyerId)
 		{
-			SupplierArticle supplierArticle = _shopLogic.FindArticleByExpectedPrice(articleId, maxExpectedPrice);
-			ShopArticle shopArticle = _shopMapper.MapToShopArticle(supplierArticle);
-			
-			_shopLogic.OrderArticleForBuyer(shopArticle, buyerId);
-			_shopLogic.SellArticle(shopArticle);
-
+			try
+			{
+				ShopArticle shopArticle = _shopLogic.OrderArticleForBuyer(articleId, maxExpectedPrice, buyerId);
+				_shopLogic.SellShopArticle(shopArticle);
+			}
+			catch (ValidationException ex)
+			{
+				_logger.Error(ex.Message);
+			}
 		}
 
-		public ShopArticle GetById(int articleId)
+		public ShopArticle DisplayShopArticle(int articleId)
 		{
-			return _articleService.GetById(articleId);
+			try
+			{
+				return _shopLogic.GetShopArticleById(articleId);
+			}
+			catch (ValidationException ex)
+			{
+				_logger.Error(ex.Message);
+				throw;
+			}
 		}
 	}
 

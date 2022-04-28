@@ -1,9 +1,10 @@
-﻿using BusinessLogic.Interfaces.Services;
+﻿using System;
+using BusinessLogic.Interfaces.Services;
+using Common.Exceptions;
 using Common.Interfaces.Logger;
 using Common.Logger;
 using Common.Models;
 using DataAccess.Database;
-using DataAccess.Interfaces;
 
 namespace BusinessLogic.Services
 {
@@ -18,12 +19,30 @@ namespace BusinessLogic.Services
 
         public ShopArticle GetById(int articleId)
         {
-            return DatabaseDriver.Instance.GetById(articleId);
+            ShopArticle shopArticle = DatabaseDriver.Instance.GetById(articleId);
+            ValidateIfShopArticleExists(articleId, shopArticle);
+
+            return shopArticle;
         }
 
         public void Save(ShopArticle shopArticle)
         {
-            DatabaseDriver.Instance.Save(shopArticle);
+            try
+            {
+                DatabaseDriver.Instance.Save(shopArticle);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Not able to store shopArticle. Database error: {ex.Message}", ex);
+            }
+        }
+        
+        private void ValidateIfShopArticleExists(int articleId, ShopArticle shopArticle)
+        {
+            if (shopArticle == null)
+            {
+                throw new ValidationException($"Article with Id = {articleId} doesn't exist.");
+            }
         }
     }
 }
