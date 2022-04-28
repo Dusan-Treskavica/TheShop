@@ -1,39 +1,44 @@
-﻿using System;
-using TheShop.Common;
-using TheShop.Database;
-using TheShop.Interfaces.Common;
-using TheShop.Interfaces.Database;
+﻿using BusinessLogic.Interfaces.Logic;
+using BusinessLogic.Interfaces.Mapper;
+using BusinessLogic.Interfaces.Services;
+using BusinessLogic.Logic;
+using BusinessLogic.Mapper;
+using BusinessLogic.Services;
+using Common.Interfaces.Logger;
+using Common.Logger;
+using Common.Models;
 using TheShop.Interfaces.Services;
-using TheShop.Model;
 
 namespace TheShop.Services
 {
     public class ShopService : IShopService
 	{
-		private readonly ISupplierService _supplierService;
+		private readonly IShopLogic _shopLogic;
+		private readonly IShopMapper _shopMapper;
 		private readonly IArticleService _articleService;
 		private readonly ILogger _logger;
 		
 		public ShopService()
 		{
-			_supplierService = new SupplierService();
+			_shopLogic = new ShopLogic();
+			_shopMapper = new ShopMapper();
 			_articleService = new ArticleService();
 			_logger = new Logger();
 		}
 
-		public void OrderAndSellArticle(int id, int maxExpectedPrice, int buyerId)
+		public void OrderAndSellArticle(int articleId, int maxExpectedPrice, int buyerId)
 		{
-			Article article = _supplierService.FindArticleByExpectedPrice(id, maxExpectedPrice);
+			SupplierArticle supplierArticle = _shopLogic.FindArticleByExpectedPrice(articleId, maxExpectedPrice);
+			ShopArticle shopArticle = _shopMapper.MapToShopArticle(supplierArticle);
+			
+			_shopLogic.OrderArticleForBuyer(shopArticle, buyerId);
+			_shopLogic.SellArticle(shopArticle);
 
-			_articleService.OrderArticleForBuyer(article, buyerId);
-			_articleService.SellArticle(article);
-			
-			
 		}
 
-		public Article GetById(int id)
+		public ShopArticle GetById(int articleId)
 		{
-			return _articleService.GetById(id);
+			return _articleService.GetById(articleId);
 		}
 	}
 

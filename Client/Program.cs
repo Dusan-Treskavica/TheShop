@@ -1,7 +1,7 @@
 ﻿using System;
 using TheShop.Services;
 
-namespace TheShop
+namespace Client
 {
 	internal class Program
 	{

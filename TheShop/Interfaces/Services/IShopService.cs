@@ -1,10 +1,10 @@
-﻿using TheShop.Model;
+﻿using Common.Models;
 
 namespace TheShop.Interfaces.Services
 {
     public interface IShopService
     {
-        void OrderAndSellArticle(int id, int maxExpectedPrice, int buyerId);
-        Article GetById(int id);
+        void OrderAndSellArticle(int articleId, int maxExpectedPrice, int buyerId);
+        ShopArticle GetById(int articleId);
     }
 }

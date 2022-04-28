@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TheShop.Model
+namespace Common.Models
 {
-    public class Article
+    public class ShopArticle
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System;
-using TheShop.Interfaces.Common;
+using Common.Interfaces.Logger;
 
-namespace TheShop.Common
+namespace Common.Logger
 {
     public class Logger : ILogger
 	{
