@@ -1,21 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using BusinessLogic.Interfaces.Services;
 using Common.Models;
-using DataAccess.Database;
-using DataAccess.Interfaces;
 
 namespace BusinessLogic.Services
 {
     public class SupplierService : ISupplierService
     {
-        private readonly IDatabaseDriver _databaseDriver;
-
-        public SupplierService()
-        {
-            _databaseDriver = new DatabaseDriver();
-        }
-
         public IList<Supplier> GetSuppliers()
         {
         	return new List<Supplier>
@@ -69,21 +59,6 @@ namespace BusinessLogic.Services
         			}
         		}
         	};
-        }
-        	
-
-        public SupplierArticle FindArticleByExpectedPrice(int id, int expectedPrice)
-        {
-            foreach (Supplier supplier in GetSuppliers())
-            {
-                SupplierArticle supplierArticle = supplier.SupplierArticles.FirstOrDefault(x => x.Id == id);
-                if (supplierArticle != null && supplierArticle.Price <= expectedPrice)
-                {
-                    return supplierArticle;
-                }
-            }
-
-            return null;
         }
     }
 }

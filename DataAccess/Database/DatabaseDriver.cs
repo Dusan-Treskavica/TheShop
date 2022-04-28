@@ -7,10 +7,29 @@ namespace DataAccess.Database
 {
     //in memory implementation
     public class DatabaseDriver : IDatabaseDriver
-	{
-		private List<ShopArticle> _shopArticles = new List<ShopArticle>();
+    {
+	    private static IDatabaseDriver _instance;
+	    private List<ShopArticle> _shopArticles;
 
-		public ShopArticle GetById(int id)
+	    private DatabaseDriver()
+	    {
+		    _shopArticles = new List<ShopArticle>();
+	    }
+	    
+	    public static IDatabaseDriver Instance
+	    {
+		    get
+		    {
+			    if (_instance == null)
+			    {
+				    _instance = new DatabaseDriver();
+			    }
+
+			    return _instance;
+		    }
+	    }
+
+	    public ShopArticle GetById(int id)
 		{
 			return _shopArticles.Single(x => x.Id == id);
 		}
