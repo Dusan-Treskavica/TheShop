@@ -29,9 +29,9 @@ namespace DataAccess.Database
 		    }
 	    }
 
-	    public ShopArticle GetById(int id)
+	    public ShopArticle GetById(int articleId)
 		{
-			return _shopArticles.FirstOrDefault(x => x.Id == id);
+			return _shopArticles.FirstOrDefault(x => x.Id == articleId);
 		}
 
 		public void Save(ShopArticle shopArticle)
