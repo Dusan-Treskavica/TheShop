@@ -12,9 +12,12 @@ namespace BusinessLogic.Services
     {
         private readonly ILogger _logger;
 
-        public ArticleService()
+        public ArticleService() : this(new Logger())
+        { }
+
+        public ArticleService(ILogger logger)
         {
-            _logger = new Logger();
+            _logger = logger;
         }
 
         public ShopArticle GetById(int articleId)
